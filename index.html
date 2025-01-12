@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cover Letter Generator</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #1a1a1a;
+      color: #f0f0f0;
+    }
+
+    header {
+      background-color: #333;
+      padding: 1rem;
+      text-align: center;
+      font-size: 1.5rem;
+      color: #fff;
+    }
+
+    .container {
+      display: flex;
+      justify-content: space-between;
+      padding: 2rem;
+      gap: 2rem;
+    }
+
+    .section {
+      flex: 1;
+      background-color: #2c2c2c;
+      border-radius: 8px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .section h3 {
+      margin-top: 0;
+      font-size: 1.2rem;
+      color: #f0f0f0;
+    }
+
+    textarea {
+      width: 100%;
+      height: 250px;
+      background-color: #1a1a1a;
+      color: #fff;
+      border: 1px solid #444;
+      border-radius: 5px;
+      padding: 10px;
+      font-size: 1rem;
+      resize: none;
+    }
+
+    button {
+      padding: 10px 15px;
+      border: none;
+      border-radius: 5px;
+      background-color: #007bff;
+      color: #fff;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .btn-secondary {
+      background-color: #444;
+      color: #fff;
+    }
+
+    .btn-secondary:hover {
+      background-color: #666;
+    }
+
+    .actions {
+      margin-top: 1rem;
+      display: flex;
+      gap: 10px;
+    }
+
+    footer {
+      margin-top: 2rem;
+      text-align: center;
+      color: #888;
+    }
+
+    .edit-context-container {
+    text-align: center;
+    margin-top: 20px; /* Adjust spacing */
+  }
+  
+  .edit-context-button {
+    text-decoration: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    color: #fff;
+    background-color: #007bff; /* Primary button color */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Add shadow for depth */
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+  
+  .edit-context-button:hover {
+    background-color: #0056b3; /* Darker blue for hover */
+    transform: translateY(-2px); /* Slight lift effect */
+  }
+
+  .upload-container {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.upload-button {
+  display: inline-block;
+  padding: 10px 20px;
+  font-size: 16px;
+  color: #fff;
+  background-color: #28a745; /* Green for upload */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.upload-button:hover {
+  background-color: #218838; /* Darker green for hover */
+  transform: translateY(-2px);
+}
+
+.upload-button:active {
+  background-color: #1e7e34; /* Even darker green for click */
+  transform: translateY(1px);
+}
+
+  </style>
+</head>
+<body>
+
+<header>
+  Cover Letter Generator
+</header>
+
+<div class="container">
+  <!-- Job Description Section -->
+  <div class="section">
+    <h3>Paste the job posting here.</h3>
+    <textarea id="job-description" placeholder="Paste or edit the job posting..."></textarea>
+    <div class="actions">
+      <button id="paste-from-clipboard"><i class="fas fa-clipboard"></i> Paste from Clipboard</button>
+      <button id="ai-generate"><i class="fas fa-robot"></i> AI Generate</button>
+    </div>
+  </div>
+
+  <!-- Cover Letter Section -->
+  <div class="section">
+    <h3>Write and Edit here.</h3>
+    <textarea id="cover-letter" placeholder="The cover letter will be generated here..."></textarea>
+    <div class="actions">
+      <button id="copy-to-clipboard"><i class="fas fa-copy"></i> Copy to Clipboard</button>
+      <button id="save-edited"><i class="fas fa-save"></i> Save Edited</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Context Button -->
+<div class="edit-context-container">
+    <a href="/edit-context" class="edit-context-button">Edit Context</a>
+  </div>
+
+  <div class="upload-container">
+    <label for="resume-upload" class="upload-button">Upload Resume</label>
+    <input type="file" id="resume-upload" style="display: none;" />
+  </div>
+
+<footer>
+  &copy; 2025 Cover Letter Generator | All rights reserved.
+</footer>
+
+<script>
+  document.getElementById("paste-from-clipboard").addEventListener("click", async () => {
+    const text = await navigator.clipboard.readText();
+    document.getElementById("job-description").value = text;
+  });
+
+  document.getElementById("copy-to-clipboard").addEventListener("click", () => {
+    const text = document.getElementById("cover-letter").value;
+    navigator.clipboard.writeText(text).then(() => {
+      alert("Cover letter copied to clipboard!");
+    });
+  });
+
+  // Dummy AI Generate button handler
+  document.getElementById("ai-generate").addEventListener("click", () => {
+    const jobDescription = document.getElementById("job-description").value;
+    document.getElementById("cover-letter").value = "Generating cover letter for:\n\n" + jobDescription;
+  });
+
+  // Navigate to the Edit Context Page
+  function navigateToEditContext() {
+    window.location.href = "/edit_context";
+  }
+</script>
+
+<script>
+document.getElementById("upload-resume-btn").addEventListener("click", async function () {
+    const fileInput = document.getElementById("resume-upload");
+    const file = fileInput.files[0];
+
+    if (!file) {
+        alert("Please select a file to upload.");
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+        const response = await fetch("/upload-resume", {
+            method: "POST",
+            body: formData,
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            alert("Resume uploaded successfully!");
+            console.log("Extracted context:", result.context);
+
+            // Save the resume context to sessionStorage for debugging (optional)
+            sessionStorage.setItem("resumeContext", result.context);
+        } else {
+            alert(result.message || "Failed to upload resume.");
+        }
+    } catch (error) {
+        console.error("Error uploading resume:", error);
+        alert("An error occurred while uploading the resume.");
+    }
+});
+  </script>
+
+</body>
+</html>

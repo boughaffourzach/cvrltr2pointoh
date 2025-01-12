@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Context</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Edit Context</h1>
+    <form id="edit-context-form">
+      <textarea id="context" name="context" rows="20" cols="80">{{ context }}</textarea>
+      <div>
+        <button type="submit">Save</button>
+        <a href="/" class="cancel-button">Cancel</a>
+      </div>
+    </form>
+    <p id="save-message"></p>
+  </div>
+
+  <script>
+    document.getElementById("edit-context-form").addEventListener("submit", async function (e) {
+      e.preventDefault(); // Prevent default form submission
+
+      const context = document.getElementById("context").value;
+
+      try {
+        const response = await fetch("/save-context", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: new URLSearchParams({ context }),
+        });
+        const data = await response.json();
+
+        const saveMessage = document.getElementById("save-message");
+        saveMessage.textContent = data.message;
+        saveMessage.style.color = data.success ? "green" : "red";
+      } catch (error) {
+        console.error("Error saving context:", error);
+      }
+    });
+  </script>
+</body>
+</html>

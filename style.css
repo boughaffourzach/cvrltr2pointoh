@@ -1,0 +1,53 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  h1 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  textarea {
+    width: 100%;
+    font-size: 16px;
+  }
+  
+  button, .cancel-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    margin: 10px;
+  }
+  
+  .edit-context-button:active {
+    background-color: #003f7f; /* Even darker blue for click */
+    transform: translateY(1px); /* Button presses slightly */
+  }
+  
+  .cancel-button {
+    text-decoration: none;
+    color: white;
+    background-color: #ff6347;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  button {
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  button:hover, .cancel-button:hover {
+    opacity: 0.8;
+  }
