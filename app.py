@@ -8,6 +8,7 @@ from PyPDF2 import PdfReader
 # Load environment variables from .env file
 load_dotenv()
 
+
 # Initialize Flask app
 app = Flask(__name__)
 
@@ -90,41 +91,40 @@ def save_context():
         return jsonify({"success": False, "message": f"Error saving context file: {e}"})
 
 # Initialize the OpenAI API client
-openai.api_key = os.getenv("OPENAI_API_KEY")
+client = openai.OpenAI(
+    api_key=os.getenv("OPENAI_API_KEY")  # Ensure your API key is set correctly
+)
+
 
 # Function to generate the cover letter
-def generate_cover_letter(job_description, resume_context=""):
-    try:
-        with open("context.md", "r") as file:
-            context = file.read()
-    except Exception as e:
-        return f"Error reading context file: {e}"
+def generate_cover_letter(job_description):
+    # Read the context from the .md file
+    with open("context.md", "r") as file:
+        context = file.read()
 
-    # Combine the context, resume content, and job description
-    combined_context = f"""
+    # Combine the context and job description into the prompt
+    prompt = f"""
     {context}
-
-    Resume Context:
-    {resume_context}
 
     Job Description:
     {job_description}
 
-    Write a tailored cover letter based on the above context, resume, and job description.
-    """
-    app.logger.debug("Combined Context for OpenAI API:\n%s", combined_context)
+    Resume Context:
+    {scan_resume}
 
+    Analyze the job description, uploaded resume, and context and write a cover letter for this role. Try to reference company names and job titles from the resume in the cover letter.
+    """
     try:
-        # Generate the cover letter using OpenAI API
-        response = openai.ChatCompletion.create(
-            model="gpt-4",
+        # Generate the cover letter using the OpenAI API
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
             messages=[
                 {"role": "system", "content": "You are a professional assistant specialized in writing cover letters."},
-                {"role": "user", "content": combined_context}
+                {"role": "user", "content": prompt}
             ],
             temperature=0.7,
         )
-        return response.choices[0].message['content'].strip()
+        return response.choices[0].message.content.strip()
     except Exception as e:
         return f"Error generating cover letter: {e}"
 
@@ -138,16 +138,21 @@ def home():
 def generate():
     data = request.json
     job_description = data.get("job_description", "")
-
-    # Retrieve resume context from the session
-    resume_context = session.get("resume_context", "")
-
+    
     if not job_description:
         return jsonify({"error": "Job description is required."}), 400
 
-    # Generate the cover letter
-    cover_letter = generate_cover_letter(job_description, resume_context)
-
+    try:
+        # Generate the cover letter
+        cover_letter = generate_cover_letter(job_description)
+    except Exception as e:
+        # Log the error and return a proper response
+        app.logger.error(f"Error generating cover letter: {e}")
+        return jsonify({"error": "An error occurred while generating the cover letter."}), 500
+    
+    # Debugging output: Print the generated cover letter
+    print(cover_letter)
+    
     return jsonify({"cover_letter": cover_letter})
 
 # Debug route to check session data
