@@ -199,12 +199,6 @@
     });
   });
 
-  // Dummy AI Generate button handler
-  document.getElementById("ai-generate").addEventListener("click", () => {
-    const jobDescription = document.getElementById("job-description").value;
-    document.getElementById("cover-letter").value = "Generating cover letter for:\n\n" + jobDescription;
-  });
-
   // Navigate to the Edit Context Page
   function navigateToEditContext() {
     window.location.href = "/edit_context";
@@ -212,7 +206,7 @@
 </script>
 
 <script>
-document.getElementById("upload-resume-btn").addEventListener("click", async function () {
+document.getElementById("resume-upload").addEventListener("change", async function () {
     const fileInput = document.getElementById("resume-upload");
     const file = fileInput.files[0];
 
@@ -244,6 +238,68 @@ document.getElementById("upload-resume-btn").addEventListener("click", async fun
     } catch (error) {
         console.error("Error uploading resume:", error);
         alert("An error occurred while uploading the resume.");
+    }
+});
+  </script>
+
+  <script>
+    document.getElementById("ai-generate").addEventListener("click", async () => {
+    const jobDescription = document.getElementById("job-description").value;
+
+    if (!jobDescription) {
+        alert("Please provide a job description.");
+        return;
+    }
+
+    // Send the job description to the backend to generate the cover letter
+    try {
+        const response = await fetch("/generate", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ job_description: jobDescription }),
+        });
+
+        const result = await response.json();
+
+        if (result.cover_letter) {
+            document.getElementById("cover-letter").value = result.cover_letter;
+        } else {
+            alert("Failed to generate cover letter.");
+        }
+    } catch (error) {
+        console.error("Error generating cover letter:", error);
+        alert("An error occurred while generating the cover letter.");
+    }
+});
+  </script>
+  <script>
+    document.getElementById("ai-generate").addEventListener("click", async () => {
+    const jobDescription = document.getElementById("job-description").value;
+
+    try {
+        const response = await fetch("/generate", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ job_description: jobDescription })
+        });
+
+        if (!response.ok) {
+            // If the response status is not OK, handle the error
+            const errorData = await response.json();
+            console.error("Error generating cover letter:", errorData.error);
+            alert("Error generating cover letter: " + errorData.error);
+            return;
+        }
+
+        const result = await response.json();
+        document.getElementById("cover-letter").value = result.cover_letter;
+    } catch (error) {
+        console.error("Error in fetch request:", error);
+        alert("An error occurred while generating the cover letter.");
     }
 });
   </script>
